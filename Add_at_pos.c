@@ -3,17 +3,19 @@
 struct node{
 	int data;
 	struct node *next;
+	struct node *prev;
 };
-void Add(struct node **ptr, int data)
+void Add_at_end(struct node **ptr, int data)
 {
-	struct node *nu =(struct node *)malloc(sizeof(struct node));
+	struct node *nu = (struct node *)malloc(sizeof(struct node));
 	struct node *temp = NULL;
 	nu->data = data;
+	nu->prev = NULL;
 	nu->next = NULL;
+
 	if(*ptr == NULL)
 	{
 		*ptr = nu;
-		return;
 	}
 	else
 	{
@@ -23,76 +25,68 @@ void Add(struct node **ptr, int data)
 			temp = temp->next;
 		}
 		temp->next = nu;
+		nu->prev = temp;
 	}
 }
-void Add_at_pos(struct node **ptr, int data)
+void Add_at_middle(struct node **ptr, int data, int pos)
 {
 	struct node *nu = (struct node *)malloc(sizeof(struct node));
 	struct node *temp = NULL;
-	int pos;
-	printf("Enter a position\n");
-	scanf("%d",&pos);
 	nu->data = data;
+	nu->prev = NULL;
 	nu->next = NULL;
-	pos--;
+	
 	if(pos == 0)
 	{
-		nu->next = *ptr;
 		*ptr = nu;
 		return;
 	}
 	else
 	{
 		temp = *ptr;
-	while(pos != 1)
-	{
-		temp = temp->next;
-		pos--;
-	}
-	nu->next = temp->next;
-	temp->next = nu;
+		int i = 0;
+		//while(i < pos-1 && temp->next != NULL)
+		while(i < pos-1 && temp->next != NULL)
+		{
+			temp = temp->next;
+			i++;
+		}
+		nu->next = temp->next;
+		nu->prev = temp;
+		temp->next = nu;
+		if(temp->next !=NULL)
+		{
+			nu->next->prev = nu;
+		}
 	}
 }
-void Delete(struct node **ptr)
+void Delete_at_pos(struct node **ptr,int pos)
 {
-	struct node *prev = NULL;
-	struct node *curr = NULL;
-	int pos;
-	printf("Enter a position\n");
-	scanf("%d",&pos);
+	struct node *temp = NULL;
 	if(*ptr == NULL)
 	{
-		printf("linked list is empty\n");
+		printf(" Linked list is empty\n");
 		return;
-	}
-	else if(pos == 1)
-	{
-		*ptr = curr->next;
-		free(curr);
-		curr = NULL;
 	}
 	else
 	{
-		prev = *ptr;
-		curr = *ptr;
-		while(pos != 1)
+		temp = *ptr;
+		int i = 0;
+		while(i < pos-1 && temp->next)
 		{
-			prev = curr;
-			curr = curr->next;
-			pos--;
+			temp = temp->next;
+			i++;
 		}
-		prev->next = curr->next;
-		free(curr);
-		curr = NULL;
+		temp->next = temp->next->next;
+		temp->next->next->prev = temp->next;
+		free(temp->next);
 	}
-	printf("Node Deleted at particular position\n");
 }
 void Print(struct node *ptr)
 {
 	if(ptr == NULL)
 	{
-		printf("linked list is empty\n");
-		return;
+		printf("Linked List is Empty\n");
 	}
 	else
 	{
@@ -107,15 +101,18 @@ void Print(struct node *ptr)
 int main()
 {
 	struct node *head = NULL;
-	int i =0;
+	int i,pos;
+	printf("Enter a position\n");
+	scanf("%d",&pos);
 	for(i=1; i<7; i++)
 	{
-		Add(&head,i*4);
+		Add_at_end(&head,i);
 	}
-	Add_at_pos(&head,99);
-	printf("linked list\n");
+	Add_at_middle(&head,99,pos);
+	printf("Modified Doubly linked list\n");
 	Print(head);
-	Delete(&head);
+	Delete_at_pos(&head,pos);
+	printf("Modified Doubly linked list Deleted\n");
 	Print(head);
 }
 

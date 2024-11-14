@@ -1,14 +1,25 @@
 #include<stdio.h>
 #include<stdlib.h>
-struct node{
+struct node
+{
 	int data;
 	struct node *next;
+	struct node *prev;
 };
-void Add_at_end(struct node **ptr, int data)
+/*struct node *create_node(int data)
+{
+	struct node *nu = (struct node *)malloc(sizeof(struct node));
+	nu->data = data;
+	nu->prev = NULL;
+	nu->next = NULL;
+	return nu;
+}*/
+void Add_end(struct node **ptr, int data)
 {
 	struct node *nu = (struct node *)malloc(sizeof(struct node));
 	struct node *temp = NULL;
 	nu->data = data;
+	nu->prev = NULL;
 	nu->next = NULL;
 	if(*ptr == NULL)
 	{
@@ -18,78 +29,113 @@ void Add_at_end(struct node **ptr, int data)
 	else
 	{
 		temp = *ptr;
-		while(temp -> next)
+		while(temp->next)
 		{
 			temp = temp->next;
 		}
-		temp ->next = nu;
+		temp->next = nu;
+		nu->prev = temp;
 	}
 }
-/*void Delete(struct node **ptr)
+void Delete_at_end(struct node **ptr)
 {
 	struct node *temp = NULL;
 	if(*ptr == NULL)
 	{
-		printf("linked list is empty\n");
+		printf("Linked list is empty\n");
 		return;
 	}
-	if((*ptr)->next == NULL)
+/*	temp = *ptr;
+	if(temp->prev == NULL)
 	{
-		free(*ptr);
+		free(temp);
 		*ptr = NULL;
-		printf("Node deleted\n");
-		return;
 	}
-	temp = *ptr;
-	while(temp->next->next)
+	while(temp->next != NULL)
 	{
 		temp = temp->next;
 	}
-	free(temp->next);
-	temp->next = NULL;
-	printf("Last node got deleted\n");
-}*/
-/*void Delete_all(struct node **ptr)
-{
-	struct node *curr = *ptr;
-	struct node *temp;
-	if(*ptr == NULL)
+	temp->prev->next = NULL;
+	free(temp);
+
+	printf("Last node deleted from the linked list\n");
+	*/
+	temp = *ptr;
+	while(temp->next != NULL)
 	{
-		printf("linked list is empty\n");
-		return;
+		temp = temp->next;
+	}
+	if(temp->prev == NULL)
+	{
+		free(temp);
+		*ptr = NULL;
 	}
 	else
 	{
-		while(curr != NULL)
-		{
-			temp = curr->next;
-			free(curr);
-			curr = temp;
-		}
+		temp->prev->next = NULL;
+		free(temp);
 	}
-	*ptr = NULL;
-	printf("All Nodes are Deleted\n");
+	printf("last node deleted from the linked list\n");
 }
-*/			
 void Reverse(struct node **ptr)
 {
-	struct node *post = NULL;
-	struct node *prev = NULL;
-	while(*ptr != NULL)
+	struct node *curr = *ptr;
+	struct node *temp = *ptr;
+	while(curr != NULL)
 	{
-		post = (*ptr)->next;
-		(*ptr)->next = prev;
-		prev = *ptr;
-		*ptr = post;
+		temp = curr->prev;
+		curr->prev = curr->next;
+		curr->next = temp;
+		curr = curr->prev;
 	}
-	*ptr = prev;
-	printf("Reverse of a linked list\n");
+
+	if(temp != NULL)
+	{
+		*ptr = temp->prev;
+	}
+	printf("Reverse nodes of a linked list\n");
 }
+void Delete_all(struct node **ptr)
+{
+	struct node *curr = *ptr;
+	struct node *temp = *ptr;
+	if(*ptr == NULL)
+	{
+		printf("Linked list empty\n");
+		return;
+	}
+	while(curr != NULL)
+	{
+		temp = curr->next;
+		free(curr);
+		curr = temp;
+	}
+	*ptr = NULL;
+	printf("All nodes are deleted from the linked list\n");
+}
+/*void Reverse(struct node **ptr)
+{
+	struct node *curr = *ptr;
+	struct node *temp = *ptr;
+	while(curr != NULL)
+	{
+		temp = curr->prev;
+		curr->prev = curr->next;
+		curr->next = temp;
+		curr = curr->prev;
+	}
+
+	if(temp != NULL)
+	{
+		*ptr = temp->prev;
+	}
+	printf("Reverse nodes of a linked list\n");
+}*/
 void Print(struct node *ptr)
 {
 	if(ptr == NULL)
 	{
-		printf("linked list is empty\n");
+		printf("Linked list is empty\n");
 		return;
 	}
 	else
@@ -105,17 +151,18 @@ void Print(struct node *ptr)
 int main()
 {
 	struct node *head = NULL;
-	int i = 0;
-	for(i = 1; i<10; i++)
+	int i;
+	for(i=1; i<=10; i++)
 	{
-		Add_at_end(&head,i*3);
+		Add_end(&head,i*3);
 	}
-	printf("Linked List\n");
+	printf("Doubly linked list of Add at End\n");
 	Print(head);
-//	Delete(&head);
-//	Print(head);
-//	Delete_all(&head);
-//	Print(head);
+	Delete_at_end(&head);
+	Print(head);
 	Reverse(&head);
 	Print(head);
+	Delete_all(&head);
+	Print(head);
 }
+
